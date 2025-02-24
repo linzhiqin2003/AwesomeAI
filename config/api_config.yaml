@@ -12,13 +12,13 @@ apis:
       - deepseek-ai/DeepSeek-V3
       - deepseek-ai/DeepSeek-R1
 
-    volcengine:
-      url: https://ark.cn-beijing.volces.com/api/v3
-      key: ${ARK_API_KEY}
-      model_list:
-        - ep-20250207110517-x9wvz#deepseek-v3
-        - ep-20250207110456-k72nb#deepseek-r1
-        - ep-20250214152235-xtxmt#doubao-1.5-pro-32k
+  volcengine:
+    url: https://ark.cn-beijing.volces.com/api/v3
+    key: ${ARK_API_KEY}
+    model_list:
+      - ep-20250207110517-x9wvz#deepseek-v3
+      - ep-20250207110456-k72nb#deepseek-r1
+      - ep-20250214152235-xtxmt#doubao-1.5-pro-32k
 
   deepseek:
     url: "https://api.deepseek.com/v1"
