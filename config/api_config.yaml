@@ -1,0 +1,51 @@
+apis:
+  # openai:
+  #   url: "https://api.openai.com/v1"
+  #   key: "${OPENAI_API_KEY}"
+  #   model_list:
+  #     - "gpt-3.5-turbo"
+  #     - "gpt-4"
+  siliconflow:
+    url: https://api.siliconflow.cn/v1
+    key: ${SILICONFLOW_API_KEY}
+    model_list:
+      - deepseek-ai/DeepSeek-V3
+      - deepseek-ai/DeepSeek-R1
+
+    volcengine:
+      url: https://ark.cn-beijing.volces.com/api/v3
+      key: ${ARK_API_KEY}
+      model_list:
+        - ep-20250207110517-x9wvz#deepseek-v3
+        - ep-20250207110456-k72nb#deepseek-r1
+        - ep-20250214152235-xtxmt#doubao-1.5-pro-32k
+
+  deepseek:
+    url: "https://api.deepseek.com/v1"
+    key: "${DEEPSEEK_API_KEY}"
+    model_list:
+      - deepseek-chat
+      - deepseek-reasoner
+
+  # google:
+  #   url: https://generativelanguage.googleapis.com/v1beta/openai/
+  #   key: ${GOOGLE_API_KEY}
+  #   model_list:
+  #     - gemini-1.5-flash-8b # - context length:1M - free plan: 15 RPM 1000000TPM 1500RPD
+  #     - gemini-1.5-flash # - context length:1M - free plan: 15RPM 1000000TRM 1500RPD
+  #     - gemini-1.5-pro # context length::2M - free plan: 2RPM 32000 TPM 50 RPD(看上去没什么用)
+  #     - gemini-2.0-flash-lite # - free plan: 30RPM 100,0000TRM 1500RPD 
+  #     - gemini-2.0-flash # - context length:1M - free plan: 15RPM 1000000TRM 1500RPD 
+
+  # groq:
+  #   url: https://api.groq.com/openai/v1
+  #   key: ${GROQ_API_KEY}
+  #   model_list:
+  #     - mixtral-8x7b-32768
+  #     - llama2-70b-4096
+
+  # nvidia:
+  #   url: https://integrate.api.nvidia.com/v1
+  #   key: ${API_KEY_REQUIRED_IF_EXECUTING_OUTSIDE_NGC}
+  #   model_list:
+  #     - playground-v1 
