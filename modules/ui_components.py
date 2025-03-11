@@ -127,11 +127,14 @@ class ChatUI:
             '<div class="timestamp">' + time.strftime("%H:%M", time.localtime(message.timestamp)) + '</div>'
             '</div></div>'
         )
+
         st.markdown(message_html, unsafe_allow_html=True)
 
-    def get_user_input(self) -> Optional[str]:
-        """获取用户输入"""
-        return st.chat_input("输入消息...")
+    def get_user_input_with_upload(self):
+        """获取用户输入和上传文件"""
+        # 聊天输入框
+        user_input = st.chat_input("输入消息...", key="user_input",accept_file=True,file_type=["jpg", "jpeg", "png"])
+        return user_input
         
     def render_thinking_animation(self):
         """渲染思考动画"""

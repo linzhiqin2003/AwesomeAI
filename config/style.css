@@ -1,8 +1,8 @@
 /* 全局样式 */
 :root {
-    --primary-color: #2d70f5;
+    --primary-color: #598bee;
     --bg-color: #f5f7fa;
-    --bubble-user: linear-gradient(135deg, #2d70f5 0%, #4c8af7 100%);
+    --bubble-user: linear-gradient(135deg, #598bee 0%, #4c8af7 100%);
     --bubble-ai: #ffffff;
     --text-primary: #1a1a1a;
     --text-secondary: #666;
@@ -783,4 +783,57 @@ div[data-testid="stMarkdownContainer"] > p {
 .assistant-answer {
     font-size: 1rem;
     color: #222;
+}
+
+
+/* 确保整个页面内容垂直填充，使输入框靠近底部 */
+.main .block-container {
+    padding-bottom: 0px !important;
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 80px);
+}
+/* 让消息容器可以滚动，占据主要空间 */
+.main > div:nth-child(1) > div:nth-child(1) > div:nth-child(1) {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 80px;
+}
+/* 输入区域固定在底部 */
+.main > div:nth-child(1) > div > div:last-child {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 5vw 10px 1rem;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 99;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    margin-left: 15rem;
+}
+/* 适配侧边栏折叠状态 */
+@media (max-width: 992px) {
+    .main > div:nth-child(1) > div > div:last-child {
+        margin-left: 0;
+    }
+}
+/* 移动端适配 */
+@media (max-width: 640px) {
+    .main > div:nth-child(1) > div > div:last-child {
+        padding: 10px 2vw;
+    }
+}
+/* 确保消息区域上方有足够的空间 */
+.stChat {
+    padding-bottom: 70px;
+}
+/* 提高消息容器的层级，确保在其他元素上方 */
+.message {
+    z-index: 1;
+}
+
+div.img_style {
+    width: 100%;
+    height: auto;
 }

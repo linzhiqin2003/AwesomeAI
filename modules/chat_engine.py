@@ -1,11 +1,12 @@
 from dataclasses import dataclass
-from typing import List, Generator, Union
+from typing import List, Generator, Union, Optional
 import time
 
 @dataclass
 class Message:
     role: str
     content: Union[dict,str]
+    files : Optional[object] = None
     timestamp: float = None
 
     def __post_init__(self):
@@ -27,21 +28,11 @@ class ChatEngine:
         self.current_api = api_name
         self.current_model = model
         
-    # def add_message(self, role: str, content: Union[dict,str]) -> Message:
-    #     """添加新消息到历史记录,封装成Message对象"""
-    #     message = Message(role=role, content=content)
-    #     self.messages.append(message)
-    #     return message
-    
-    # def get_chat_history(self) -> List[Message]:
-    #     """获取聊天历史"""
-    #     return self.messages
-    
     def clear_history(self):
         """清空聊天历史"""
         self.messages = []
         
-    def get_response(self,messages:List[Message]) -> Generator[str, None, Message]:
+    def get_response(self, messages: List[Message], rag_context: Optional[str] = None) -> Generator[str, None, Message]:
         """获取AI响应"""
         if not self.current_api or not self.current_model:
             raise ValueError("API and model must be set before chat")
@@ -54,6 +45,26 @@ class ChatEngine:
                 context.append({"role": msg.role, "content": msg.content["content"]})
             else:
                 context.append({"role": msg.role, "content": msg.content})
+        
+        # # 如果有RAG上下文，添加系统提示
+        # if rag_context and rag_context.strip():
+        #     # 添加系统消息，引导模型使用检索到的文档内容
+        #     system_message = {
+        #         "role": "system", 
+        #         "content": f"你是一个能够参考文档的助手。请使用以下检索到的信息帮助回答用户的问题。如果信息不相关，请忽略它。\n\n{rag_context}"
+        #     }
+            
+        #     # 如果已有系统消息，就替换；如果没有，就添加
+        #     has_system = False
+        #     for i, msg in enumerate(context):
+        #         if msg["role"] == "system":
+        #             context[i] = system_message
+        #             has_system = True
+        #             break
+            
+        #     if not has_system:
+        #         context.insert(0, system_message)
+        
         # 获取chat client
         client = self.api_manager.create_chat_client(
             self.current_api, 
@@ -72,6 +83,7 @@ class ChatEngine:
         # 处理响应流
         reasoning_elapsed = 0
         recorder = False
+        on_reasoning = None
         for chunk in response:
             if hasattr(chunk.choices[0].delta, 'reasoning_content') and chunk.choices[0].delta.reasoning_content is not None:
                 if not reasoning_elapsed:
@@ -79,15 +91,28 @@ class ChatEngine:
                     reasoning_start = time.time()
                 reasoning += chunk.choices[0].delta.reasoning_content
                 yield {"type": "reasoning", "content": chunk.choices[0].delta.reasoning_content}
+            elif hasattr(chunk.choices[0].delta, 'content') and chunk.choices[0].delta.content and "<think>" in chunk.choices[0].delta.content:
+                if not on_reasoning:
+                    on_reasoning = True
+                if not reasoning_elapsed:
+                    reasoning_elapsed = -1
+                    reasoning_start = time.time()
             else:
-                full_response += chunk.choices[0].delta.content
-                if reasoning_elapsed:
-                    if not recorder:
-                        reasoning_elapsed = round(time.time() - reasoning_start)
-                        recorder = True
-                    yield {"type": "content", "content": chunk.choices[0].delta.content,"elapsed":reasoning_elapsed}
+                if on_reasoning:
+                    if chunk.choices[0].delta.content == "</think>":
+                        on_reasoning = False
+                        continue
+                    reasoning += chunk.choices[0].delta.content
+                    yield {"type": "reasoning", "content": chunk.choices[0].delta.content}
                 else:
-                    yield {"type": "content", "content": chunk.choices[0].delta.content}
+                    full_response += chunk.choices[0].delta.content if chunk.choices[0].delta.content else ""
+                    if reasoning_elapsed:
+                        if not recorder:
+                            reasoning_elapsed = round(time.time() - reasoning_start)
+                            recorder = True
+                        yield {"type": "content", "content": chunk.choices[0].delta.content,"elapsed":reasoning_elapsed}
+                    else:
+                        yield {"type": "content", "content": chunk.choices[0].delta.content}
         
         # 添加助手响应到历史
         return Message(

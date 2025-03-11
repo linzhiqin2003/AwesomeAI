@@ -3,6 +3,10 @@ import time
 from modules.api_manager import APIManager
 from modules.chat_engine import ChatEngine,Message
 from modules.ui_components import ChatUI
+import os
+
+os.environ["http_proxy"] = "http://localhost:4780"
+os.environ["https_proxy"] = "http://localhost:4780"
 
 # 设置页面配置
 st.set_page_config(
@@ -72,14 +76,16 @@ def main():
         st.session_state.messages = []
     
     # 获取用户输入
-    user_input = chat_ui.get_user_input()
+    user_input = chat_ui.get_user_input_with_upload()
+    print(user_input)
     
     # 处理用户输入
     if user_input:
         # 会话状态中添加用户消息
         st.session_state.messages.append(Message(
             role="user",
-            content=user_input,
+            content=user_input.text,
+            files=user_input.files if user_input.files else None,
             timestamp=time.time()
             ))
         
@@ -122,7 +128,7 @@ def main():
                             under_reasoning = False
                             response_text["elapsed"] = chunk["elapsed"]
 
-                        response_text[chunk_type] += chunk["content"]
+                        response_text[chunk_type] += chunk["content"] if chunk["content"] else ""
                         
                         message_placeholder.markdown(
                             chat_ui.render_streaming_message(
