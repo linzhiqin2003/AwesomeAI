@@ -5,9 +5,6 @@ from modules.chat_engine import ChatEngine,Message
 from modules.ui_components import ChatUI
 import os
 
-os.environ["http_proxy"] = "http://localhost:4780"
-os.environ["https_proxy"] = "http://localhost:4780"
-
 # 设置页面配置
 st.set_page_config(
     page_title="AwesomeAI",
